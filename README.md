@@ -8,4 +8,7 @@
 
 # Usage
 
-Run `make && make run` || `make && ./apiserver` ... etc
+- Создать файл `.env` в корне проекта 
+- Прописать константы (см. пример в [.exapmle_env](https://github.com/bbt-t/tech-ex-server/blob/master/.example_env))
+- Запустить postrges
+- Запуск через `make run` || `make && ./apiserver` ... etc
