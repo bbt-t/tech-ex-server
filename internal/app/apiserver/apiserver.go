@@ -71,7 +71,9 @@ func (a *APIServer) helloHandler() http.HandlerFunc {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)
-		w.Write(rg)
+		if _, err := w.Write(rg); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
