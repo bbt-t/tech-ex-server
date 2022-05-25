@@ -3,9 +3,11 @@ package apiserver
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"log"
 	"net/http"
+	"os"
 	"tech-ex-server/internal/app/storage"
 	"time"
 )
@@ -62,14 +64,11 @@ func (a *APIServer) makeStorage() error {
 }
 
 func (a *APIServer) helloHandler() http.HandlerFunc {
-	// Для локальных структур
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Для бизнес-логики
 		rg, err := a.storage.Item().SelectItem()
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)
 		w.Write(rg)
@@ -106,15 +105,17 @@ func GetDataFromResp(response *http.Response) ResponseJsonData {
 	if err := json.NewDecoder(response.Body).Decode(&result); err != nil {
 		log.Fatal(err)
 	}
-
 	defer response.Body.Close()
 	return result
 }
 
 func EditedData() map[string]dataToAdd {
+	if err := godotenv.Load(".env"); err != nil {
+		log.Fatal(err)
+	}
 	editedData := map[string]dataToAdd{}
 
-	response := RequestToExternalSource("https://api.blockchain.com/v3/exchange/tickers")
+	response := RequestToExternalSource(os.Getenv("RQ_API"))
 	result := GetDataFromResp(response)
 
 	for _, val := range result {

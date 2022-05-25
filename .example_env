@@ -1,0 +1,6 @@
+RQ_API="https://..."
+
+DB_USER=user_name
+DB_PASSWORD=my_pass
+DB_NAME=postgres
+DB_HOST=localhost
