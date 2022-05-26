@@ -27,7 +27,6 @@ func (s *Storage) Open() error {
 		return err
 	}
 	s.db = db
-	log.Println("____OPEN CONNECTION!___")
 	return nil
 }
 
@@ -35,7 +34,6 @@ func (s *Storage) Close() {
 	if err := s.db.Close(); err != nil {
 		log.Fatal(err)
 	}
-	log.Println("___CLOSE CONNECTION!___")
 }
 
 func (s *Storage) CreateSchema() {
@@ -51,6 +49,7 @@ func (s *Storage) CreateSchema() {
 	if _, err := q.Exec(); err != nil {
 		log.Fatal(err)
 	}
+	log.Println("> SCHEMA CREATED <")
 }
 
 func (s *Storage) Item() *ItemRepository {

@@ -32,11 +32,19 @@ func main() {
 		log.Fatal(err)
 	}
 
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println("---> Looks like you don't have Postgres DataBase running <---", err)
+		}
+	}()
+	apiserver.ExitHandler()
+
 	stConfig := storage.NewConfig()
 	sf := storage.New(stConfig)
 	sf.CreateSchema()
+
 	go func() {
-		duration := time.Second * time.Duration(5)
+		duration := time.Second * time.Duration(30)
 		tk := time.NewTicker(duration)
 		for range tk.C {
 			rJson, _ := json.Marshal(apiserver.EditedData())
