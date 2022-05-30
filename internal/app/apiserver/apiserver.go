@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"tech-ex-server/internal/app/model"
 	"tech-ex-server/internal/app/storage"
 	"time"
 )
@@ -51,7 +52,7 @@ func (a *APIServer) makeLogger() error {
 }
 
 func (a *APIServer) makeRouter() {
-	a.router.HandleFunc("/api", a.helloHandler())
+	a.router.HandleFunc("/api", a.apiHandler())
 }
 
 func (a *APIServer) makeStorage() error {
@@ -63,11 +64,13 @@ func (a *APIServer) makeStorage() error {
 	return nil
 }
 
-func (a *APIServer) helloHandler() http.HandlerFunc {
+func (a *APIServer) apiHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rg, err := a.storage.Item().SelectItem()
 		if err != nil {
-			log.Fatal(err)
+			if rg, err = json.Marshal(EditedData()); err != nil {
+				log.Fatal(err)
+			}
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)
@@ -128,4 +131,21 @@ func EditedData() map[string]dataToAdd {
 		}
 	}
 	return editedData
+}
+
+func MakeItem(duration time.Duration, sf *storage.Storage) {
+	tk := time.NewTicker(duration)
+	for range tk.C {
+		rJson, _ := json.Marshal(EditedData())
+		it := model.Item{
+			CreateAt: time.Now(),
+			JsonData: rJson,
+		}
+		if err := sf.Item().DropItem(); err != nil {
+			log.Fatal(err)
+		}
+		if err := sf.Item().CreateItem(it); err != nil {
+			log.Fatal(err)
+		}
+	}
 }

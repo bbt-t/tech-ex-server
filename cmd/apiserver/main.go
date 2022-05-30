@@ -1,12 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"github.com/BurntSushi/toml"
 	"log"
 	"tech-ex-server/internal/app/apiserver"
-	"tech-ex-server/internal/app/model"
 	"tech-ex-server/internal/app/storage"
 	"time"
 )
@@ -43,25 +41,9 @@ func main() {
 	sf := storage.New(stConfig)
 	sf.CreateSchema()
 
-	go func() {
-		duration := time.Second * time.Duration(30)
-		tk := time.NewTicker(duration)
-		for range tk.C {
-			rJson, _ := json.Marshal(apiserver.EditedData())
+	duration := time.Second * time.Duration(30)
+	go apiserver.MakeItem(duration, sf)
 
-			it := model.Item{
-				CreateAt: time.Now(),
-				JsonData: rJson,
-			}
-			if err := sf.Item().DropItem(); err != nil {
-				log.Fatal(err)
-			}
-			if err := sf.Item().CreateItem(it); err != nil {
-				log.Fatal(err)
-			}
-			sf.Close()
-		}
-	}()
 	s := apiserver.New(config)
 	if err := s.StartServer(); err != nil {
 		log.Fatal(err)

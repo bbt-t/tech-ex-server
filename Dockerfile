@@ -15,7 +15,6 @@ RUN go get github.com/BurntSushi/toml && \
     go get github.com/gorilla/mux && \
     go get github.com/lib/pq
 
-COPY . .
 
 RUN make
 
